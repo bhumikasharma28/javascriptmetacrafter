@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AdminOnlyContract {
+    address public admin;
+
+    constructor() {
+        admin = msg.sender; // Set the deploying address as the admin
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _; // Continue executing the function
+    }
+
+    function getValue() external view onlyAdmin returns (uint256) {
+        // Example function accessible only to admin
+        return 42;
+    }
+}
+
