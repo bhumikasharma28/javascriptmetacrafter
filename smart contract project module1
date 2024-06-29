@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ExampleContract {
+    uint256 public value;
+
+    function setValue(uint256 _newValue) external {
+    
+        // Use require() to check a condition
+        
+        require(_newValue > 0, "Value must be greater than zero");
+
+        // Use assert() to validate an invariant
+        
+        assert(_newValue != value);
+
+        // Use revert() to revert state changes
+        
+        if (_newValue == 42) {
+            revert("The answer is already provided");
+        }
+
+        value = _newValue;
+    }
+}
