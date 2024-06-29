@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// Base contract
+contract BaseContract {
+    uint256 public storedData;
+
+    // Payable function to receive Ether
+    function deposit() public payable {
+        // Logic to handle deposit can be added here
+    }
+
+    // View function to read stored data
+    function getStoredData() public view returns (uint256) {
+        return storedData;
+    }
+
+    // Pure function to do some calculation
+    function calculate(uint256 a, uint256 b) public pure returns (uint256) {
+        return a + b;
+    }
+
+    // Function to set stored data
+    function setStoredData(uint256 data) public {
+        storedData = data;
+    }
+}
+
+// Derived contract
+contract DerivedContract extends BaseContract {
+    // Additional function in derived contract to get balance of the contract
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    // Overriding a function from base contract
+    function setStoredData(uint256 data) public override {
+        storedData = data * 2; // For example, let's double the data before storing
+    }
+}
