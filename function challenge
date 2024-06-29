@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleCont {
+    uint256 public storedValue;
+
+    // View function to read storedValue
+    function getStoredValue() public view virtual returns (uint256) {
+        return storedValue;
+    }
+
+    // Pure function to perform a simple calculation
+    function addValues(uint256 a, uint256 b) public pure virtual returns (uint256) {
+        return a + b;
+    }
+
+    // Payable function to receive ether and update storedValue
+    function deposit() public payable virtual {
+        storedValue += msg.value;
+    }
+}
+
+contract DerivedContract is SimpleCont {
+    // Derived contract can use and override the functions if needed
+}
+
