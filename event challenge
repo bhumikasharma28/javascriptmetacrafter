@@ -1,0 +1,101 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EventContract {
+    // Define events
+    event ValueChanged(address indexed user, uint256 oldValue, uint256 newValue);
+    event EtherReceived(address indexed from, uint256 amount);
+    event AdminChanged(address indexed oldAdmin, address indexed newAdmin);
+
+    address public admin;
+    uint256 public value;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    // Function to change the value
+    function changeValue(uint256 newValue) public {
+        uint256 oldValue = value;
+        value = newValue;
+        emit ValueChanged(msg.sender, oldValue, newValue);
+    }
+
+    // Payable function to receive Ether
+    function receiveEther() public payable {
+        emit EtherReceived(msg.sender, msg.value);
+    }
+
+    // Function to change the admin
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        address oldAdmin = admin;
+        admin = newAdmin;
+        emit AdminChanged(oldAdmin, newAdmin);
+    }
+}
+
+
+javscript code:
+const Web3 = require('web3');
+const { abi, evm } = require('./EventContract.json'); // Replace with your contract ABI and bytecode
+
+const web3 = new Web3('http://localhost:8545'); // Replace with your Ethereum node URL
+
+const deployContract = async () => {
+    const accounts = await web3.eth.getAccounts();
+    const contract = new web3.eth.Contract(abi);
+
+    const deployedContract = await contract.deploy({ data: evm.bytecode.object })
+        .send({ from: accounts[0], gas: '1000000' });
+
+    console.log('Contract deployed to', deployedContract.options.address);
+    return deployedContract;
+};
+
+const listenToEvents = (contract) => {
+    contract.events.ValueChanged({}, (error, event) => {
+        if (error) {
+            console.error('Error on ValueChanged event', error);
+        } else {
+            console.log('ValueChanged event', event.returnValues);
+        }
+    });
+
+    contract.events.EtherReceived({}, (error, event) => {
+        if (error) {
+            console.error('Error on EtherReceived event', error);
+        } else {
+            console.log('EtherReceived event', event.returnValues);
+        }
+    });
+
+    contract.events.AdminChanged({}, (error, event) => {
+        if (error) {
+            console.error('Error on AdminChanged event', error);
+        } else {
+            console.log('AdminChanged event', event.returnValues);
+        }
+    });
+};
+
+const main = async () => {
+    const contract = await deployContract();
+    listenToEvents(contract);
+
+    const accounts = await web3.eth.getAccounts();
+
+    // Example function calls to trigger events
+    await contract.methods.changeValue(100).send({ from: accounts[0] });
+
+    await web3.eth.sendTransaction({
+        from: accounts[0],
+        to: contract.options.address,
+        value: web3.utils.toWei('1', 'ether')
+    });
+
+    await contract.methods.changeAdmin(accounts[1]).send({ from: accounts[0] });
+};
+
+main();
+
