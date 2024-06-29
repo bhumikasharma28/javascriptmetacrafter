@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MessageContextExample {
+    // Define events to log message context information
+    event LogSender(address indexed sender);
+    event LogValue(uint256 value);
+    event LogData(bytes data);
+    event LogSignature(bytes4 signature);
+
+    // Function to log the message context
+    function logMessageContext() public payable {
+        // Emit events with message context information
+        emit LogSender(msg.sender);
+        emit LogValue(msg.value);
+        emit LogData(msg.data);
+        emit LogSignature(msg.sig);
+    }
+
+    // Function to receive ether
+    receive() external payable {
+        logMessageContext();
+    }
+
+    // Fallback function to handle non-existent function calls
+    fallback() external payable {
+        logMessageContext();
+    }
+}
